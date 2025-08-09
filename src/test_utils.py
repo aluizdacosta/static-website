@@ -22,38 +22,38 @@ from textnode import TextNode, TextType
 class TestTextNodeToHtmlNode(unittest.TestCase):
 
     def test_text_node(self):
-        text_node = TextNode("Hello, world!", TextType.NORMAL_TEXT)
+        text_node = TextNode("Hello, world!", TextType.TEXT)
         html_node = text_node_to_html_node(text_node)
         self.assertIsNone(html_node.tag)
         self.assertEqual(html_node.value, "Hello, world!")
 
     def test_bold_node(self):
-        text_node = TextNode("Bold text", TextType.BOLD_TEXT)
+        text_node = TextNode("Bold text", TextType.BOLD)
         html_node = text_node_to_html_node(text_node)
         self.assertEqual(html_node.tag, "b")
         self.assertEqual(html_node.value, "Bold text")
 
     def test_italic_node(self):
-        text_node = TextNode("Italic text", TextType.ITALIC_TEXT)
+        text_node = TextNode("Italic text", TextType.ITALIC)
         html_node = text_node_to_html_node(text_node)
         self.assertEqual(html_node.tag, "i")
         self.assertEqual(html_node.value, "Italic text")
 
     def test_code_node(self):
-        text_node = TextNode("print('Hello')", TextType.CODE_TEXT)
+        text_node = TextNode("print('Hello')", TextType.CODE)
         html_node = text_node_to_html_node(text_node)
         self.assertEqual(html_node.tag, "code")
         self.assertEqual(html_node.value, "print('Hello')")
 
     def test_link_node(self):
-        text_node = TextNode("Click here", TextType.LINKS, "https://example.com")
+        text_node = TextNode("Click here", TextType.LINK, "https://example.com")
         html_node = text_node_to_html_node(text_node)
         self.assertEqual(html_node.tag, "a")
         self.assertEqual(html_node.value, "Click here")
         self.assertEqual(html_node.props, {"href": "https://example.com"})
 
     def test_image_node(self):
-        text_node = TextNode("Alt text", TextType.IMAGES, "https://example.com/image.jpg")
+        text_node = TextNode("Alt text", TextType.IMAGE, "https://example.com/image.jpg")
         html_node = text_node_to_html_node(text_node)
         self.assertEqual(html_node.tag, "img")
         self.assertEqual(html_node.value, "")
@@ -70,80 +70,80 @@ class TestTextNodeToHtmlNode(unittest.TestCase):
 
 class TestInlineMarkdown(unittest.TestCase):
     def test_delim_bold(self):
-        node = TextNode("This is text with a **bolded** word", TextType.NORMAL_TEXT)
-        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD_TEXT)
+        node = TextNode("This is text with a **bolded** word", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
         self.assertListEqual(
             [
-                TextNode("This is text with a ", TextType.NORMAL_TEXT),
-                TextNode("bolded", TextType.BOLD_TEXT),
-                TextNode(" word", TextType.NORMAL_TEXT),
+                TextNode("This is text with a ", TextType.TEXT),
+                TextNode("bolded", TextType.BOLD),
+                TextNode(" word", TextType.TEXT),
             ],
             new_nodes,
         )
 
     def test_delim_bold_double(self):
         node = TextNode(
-            "This is text with a **bolded** word and **another**", TextType.NORMAL_TEXT
+            "This is text with a **bolded** word and **another**", TextType.TEXT
         )
-        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD_TEXT)
+        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
         self.assertListEqual(
             [
-                TextNode("This is text with a ", TextType.NORMAL_TEXT),
-                TextNode("bolded", TextType.BOLD_TEXT),
-                TextNode(" word and ", TextType.NORMAL_TEXT),
-                TextNode("another", TextType.BOLD_TEXT),
+                TextNode("This is text with a ", TextType.TEXT),
+                TextNode("bolded", TextType.BOLD),
+                TextNode(" word and ", TextType.TEXT),
+                TextNode("another", TextType.BOLD),
             ],
             new_nodes,
         )
 
     def test_delim_bold_multiword(self):
         node = TextNode(
-            "This is text with a **bolded word** and **another**", TextType.NORMAL_TEXT
+            "This is text with a **bolded word** and **another**", TextType.TEXT
         )
-        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD_TEXT)
+        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
         self.assertListEqual(
             [
-                TextNode("This is text with a ", TextType.NORMAL_TEXT),
-                TextNode("bolded word", TextType.BOLD_TEXT),
-                TextNode(" and ", TextType.NORMAL_TEXT),
-                TextNode("another", TextType.BOLD_TEXT),
+                TextNode("This is text with a ", TextType.TEXT),
+                TextNode("bolded word", TextType.BOLD),
+                TextNode(" and ", TextType.TEXT),
+                TextNode("another", TextType.BOLD),
             ],
             new_nodes,
         )
 
     def test_delim_italic(self):
-        node = TextNode("This is text with an *italic* word", TextType.NORMAL_TEXT)
-        new_nodes = split_nodes_delimiter([node], "*", TextType.ITALIC_TEXT)
+        node = TextNode("This is text with an *italic* word", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "*", TextType.ITALIC)
         self.assertListEqual(
             [
-                TextNode("This is text with an ", TextType.NORMAL_TEXT),
-                TextNode("italic", TextType.ITALIC_TEXT),
-                TextNode(" word", TextType.NORMAL_TEXT),
+                TextNode("This is text with an ", TextType.TEXT),
+                TextNode("italic", TextType.ITALIC),
+                TextNode(" word", TextType.TEXT),
             ],
             new_nodes,
         )
 
     def test_delim_bold_and_italic(self):
-        node = TextNode("**bold** and *italic*", TextType.NORMAL_TEXT)
-        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD_TEXT)
-        new_nodes = split_nodes_delimiter(new_nodes, "*", TextType.ITALIC_TEXT)
+        node = TextNode("**bold** and *italic*", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
+        new_nodes = split_nodes_delimiter(new_nodes, "*", TextType.ITALIC)
         self.assertListEqual(
             [
-                TextNode("bold", TextType.BOLD_TEXT),
-                TextNode(" and ", TextType.NORMAL_TEXT),
-                TextNode("italic", TextType.ITALIC_TEXT),
+                TextNode("bold", TextType.BOLD),
+                TextNode(" and ", TextType.TEXT),
+                TextNode("italic", TextType.ITALIC),
             ],
             new_nodes,
         )
 
     def test_delim_code(self):
-        node = TextNode("This is text with a `code block` word", TextType.NORMAL_TEXT)
-        new_nodes = split_nodes_delimiter([node], "`", TextType.CODE_TEXT)
+        node = TextNode("This is text with a `code block` word", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "`", TextType.CODE)
         self.assertListEqual(
             [
-                TextNode("This is text with a ", TextType.NORMAL_TEXT),
-                TextNode("code block", TextType.CODE_TEXT),
-                TextNode(" word", TextType.NORMAL_TEXT),
+                TextNode("This is text with a ", TextType.TEXT),
+                TextNode("code block", TextType.CODE),
+                TextNode(" word", TextType.TEXT),
             ],
             new_nodes,
         )
@@ -289,23 +289,23 @@ class TestMarkdownNodeSplitting(unittest.TestCase):
         """Test basic image splitting with a single image."""
         node = TextNode(
             "Hello ![alt text](url) world",
-            TextType.NORMAL_TEXT
+            TextType.TEXT
         )
         new_nodes = split_nodes_image([node])
         self.assertEqual(len(new_nodes), 3)
         self.assertEqual(new_nodes[0].text, "Hello ")
-        self.assertEqual(new_nodes[0].text_type, TextType.NORMAL_TEXT)
+        self.assertEqual(new_nodes[0].text_type, TextType.TEXT)
         self.assertEqual(new_nodes[1].text, "alt text")
-        self.assertEqual(new_nodes[1].text_type, TextType.IMAGES)
+        self.assertEqual(new_nodes[1].text_type, TextType.IMAGE)
         self.assertEqual(new_nodes[1].url, "url")
         self.assertEqual(new_nodes[2].text, " world")
-        self.assertEqual(new_nodes[2].text_type, TextType.NORMAL_TEXT)
+        self.assertEqual(new_nodes[2].text_type, TextType.TEXT)
 
     def test_split_nodes_image_multiple(self):
         """Test splitting with multiple images."""
         node = TextNode(
             "![img1](url1)middle![img2](url2)",
-            TextType.NORMAL_TEXT
+            TextType.TEXT
         )
         new_nodes = split_nodes_image([node])
         self.assertEqual(len(new_nodes), 3)
@@ -317,15 +317,15 @@ class TestMarkdownNodeSplitting(unittest.TestCase):
 
     def test_split_nodes_image_no_images(self):
         """Test with text containing no images."""
-        node = TextNode("Plain text", TextType.NORMAL_TEXT)
+        node = TextNode("Plain text", TextType.TEXT)
         new_nodes = split_nodes_image([node])
         self.assertEqual(len(new_nodes), 1)
         self.assertEqual(new_nodes[0].text, "Plain text")
-        self.assertEqual(new_nodes[0].text_type, TextType.NORMAL_TEXT)
+        self.assertEqual(new_nodes[0].text_type, TextType.TEXT)
 
     def test_split_nodes_image_non_text_node(self):
         """Test with a non-text node (should be returned unchanged)."""
-        node = TextNode("![img](url)", TextType.LINKS, "url")
+        node = TextNode("![img](url)", TextType.LINK, "url")
         new_nodes = split_nodes_image([node])
         self.assertEqual(len(new_nodes), 1)
         self.assertEqual(new_nodes[0], node)
@@ -334,23 +334,23 @@ class TestMarkdownNodeSplitting(unittest.TestCase):
         """Test basic link splitting with a single link."""
         node = TextNode(
             "Hello [anchor](url) world",
-            TextType.NORMAL_TEXT
+            TextType.TEXT
         )
         new_nodes = split_nodes_link([node])
         self.assertEqual(len(new_nodes), 3)
         self.assertEqual(new_nodes[0].text, "Hello ")
-        self.assertEqual(new_nodes[0].text_type, TextType.NORMAL_TEXT)
+        self.assertEqual(new_nodes[0].text_type, TextType.TEXT)
         self.assertEqual(new_nodes[1].text, "anchor")
-        self.assertEqual(new_nodes[1].text_type, TextType.LINKS)
+        self.assertEqual(new_nodes[1].text_type, TextType.LINK)
         self.assertEqual(new_nodes[1].url, "url")
         self.assertEqual(new_nodes[2].text, " world")
-        self.assertEqual(new_nodes[2].text_type, TextType.NORMAL_TEXT)
+        self.assertEqual(new_nodes[2].text_type, TextType.TEXT)
 
     def test_split_nodes_link_multiple(self):
         """Test splitting with multiple links."""
         node = TextNode(
             "[link1](url1)middle[link2](url2)",
-            TextType.NORMAL_TEXT
+            TextType.TEXT
         )
         new_nodes = split_nodes_link([node])
         self.assertEqual(len(new_nodes), 3)
@@ -362,15 +362,15 @@ class TestMarkdownNodeSplitting(unittest.TestCase):
 
     def test_split_nodes_link_no_links(self):
         """Test with text containing no links."""
-        node = TextNode("Plain text", TextType.NORMAL_TEXT)
+        node = TextNode("Plain text", TextType.TEXT)
         new_nodes = split_nodes_link([node])
         self.assertEqual(len(new_nodes), 1)
         self.assertEqual(new_nodes[0].text, "Plain text")
-        self.assertEqual(new_nodes[0].text_type, TextType.NORMAL_TEXT)
+        self.assertEqual(new_nodes[0].text_type, TextType.TEXT)
 
     def test_split_nodes_link_non_text_node(self):
         """Test with a non-text node (should be returned unchanged)."""
-        node = TextNode("[text](url)", TextType.IMAGES, "url")
+        node = TextNode("[text](url)", TextType.IMAGE, "url")
         new_nodes = split_nodes_link([node])
         self.assertEqual(len(new_nodes), 1)
         self.assertEqual(new_nodes[0], node)
@@ -380,7 +380,7 @@ class TestMarkdownNodeSplitting(unittest.TestCase):
         # Test nested-looking brackets that aren't actually nested
         node = TextNode(
             "[[text]](url)",
-            TextType.NORMAL_TEXT
+            TextType.TEXT
         )
         new_nodes = split_nodes_link([node])
         self.assertEqual(len(new_nodes), 1)
@@ -390,7 +390,7 @@ class TestMarkdownNodeSplitting(unittest.TestCase):
         # Test links with special characters in URL
         node = TextNode(
             "[text](https://example.com/path?param=value)",
-            TextType.NORMAL_TEXT
+            TextType.TEXT
         )
         new_nodes = split_nodes_link([node])
         self.assertEqual(len(new_nodes), 1)
@@ -401,24 +401,24 @@ class TestMarkdownNodeSplitting(unittest.TestCase):
         test_cases = [
             (
                 "[[text]](url)",
-                [TextNode("[text]", TextType.LINKS, "url")]
+                [TextNode("[text]", TextType.LINK, "url")]
             ),
             (
                 "[a[b]c](url)",
-                [TextNode("a[b]c", TextType.LINKS, "url")]
+                [TextNode("a[b]c", TextType.LINK, "url")]
             ),
             (
                 "Before [[text]](url) after",
                 [
-                    TextNode("Before ", TextType.NORMAL_TEXT),
-                    TextNode("[text]", TextType.LINKS, "url"),
-                    TextNode(" after", TextType.NORMAL_TEXT)
+                    TextNode("Before ", TextType.TEXT),
+                    TextNode("[text]", TextType.LINK, "url"),
+                    TextNode(" after", TextType.TEXT)
                 ]
             )
         ]
         
         for input_text, expected_nodes in test_cases:
-            node = TextNode(input_text, TextType.NORMAL_TEXT)
+            node = TextNode(input_text, TextType.TEXT)
             result = split_nodes_link([node])
             self.assertEqual(len(result), len(expected_nodes))
             for res_node, exp_node in zip(result, expected_nodes):
@@ -432,43 +432,43 @@ class TestTextToTextNodes(unittest.TestCase):
         nodes = text_to_textnodes("Hello world")
         self.assertEqual(len(nodes), 1)
         self.assertEqual(nodes[0].text, "Hello world")
-        self.assertEqual(nodes[0].text_type, TextType.NORMAL_TEXT)
+        self.assertEqual(nodes[0].text_type, TextType.TEXT)
         
     def test_bold_text(self):
         """Test text with bold markdown."""
         nodes = text_to_textnodes("Hello **world**")
         self.assertEqual(len(nodes), 2)
         self.assertEqual(nodes[0].text, "Hello ")
-        self.assertEqual(nodes[0].text_type, TextType.NORMAL_TEXT)
+        self.assertEqual(nodes[0].text_type, TextType.TEXT)
         self.assertEqual(nodes[1].text, "world")
-        self.assertEqual(nodes[1].text_type, TextType.BOLD_TEXT)
+        self.assertEqual(nodes[1].text_type, TextType.BOLD)
         
     def test_italic_text(self):
         """Test text with italic markdown."""
         nodes = text_to_textnodes("Hello *world*")
         self.assertEqual(len(nodes), 2)
         self.assertEqual(nodes[0].text, "Hello ")
-        self.assertEqual(nodes[0].text_type, TextType.NORMAL_TEXT)
+        self.assertEqual(nodes[0].text_type, TextType.TEXT)
         self.assertEqual(nodes[1].text, "world")
-        self.assertEqual(nodes[1].text_type, TextType.ITALIC_TEXT)
+        self.assertEqual(nodes[1].text_type, TextType.ITALIC)
         
     def test_code_block(self):
         """Test text with code block."""
         nodes = text_to_textnodes("Hello `world`")
         self.assertEqual(len(nodes), 2)
         self.assertEqual(nodes[0].text, "Hello ")
-        self.assertEqual(nodes[0].text_type, TextType.NORMAL_TEXT)
+        self.assertEqual(nodes[0].text_type, TextType.TEXT)
         self.assertEqual(nodes[1].text, "world")
-        self.assertEqual(nodes[1].text_type, TextType.CODE_TEXT)
+        self.assertEqual(nodes[1].text_type, TextType.CODE)
         
     def test_link(self):
         """Test text with a link."""
         nodes = text_to_textnodes("Hello [world](https://example.com)")
         self.assertEqual(len(nodes), 2)
         self.assertEqual(nodes[0].text, "Hello ")
-        self.assertEqual(nodes[0].text_type, TextType.NORMAL_TEXT)
+        self.assertEqual(nodes[0].text_type, TextType.TEXT)
         self.assertEqual(nodes[1].text, "world")
-        self.assertEqual(nodes[1].text_type, TextType.LINKS)
+        self.assertEqual(nodes[1].text_type, TextType.LINK)
         self.assertEqual(nodes[1].url, "https://example.com")
         
     def test_image(self):
@@ -476,9 +476,9 @@ class TestTextToTextNodes(unittest.TestCase):
         nodes = text_to_textnodes("Hello ![world](image.jpg)")
         self.assertEqual(len(nodes), 2)
         self.assertEqual(nodes[0].text, "Hello ")
-        self.assertEqual(nodes[0].text_type, TextType.NORMAL_TEXT)
+        self.assertEqual(nodes[0].text_type, TextType.TEXT)
         self.assertEqual(nodes[1].text, "world")
-        self.assertEqual(nodes[1].text_type, TextType.IMAGES)
+        self.assertEqual(nodes[1].text_type, TextType.IMAGE)
         self.assertEqual(nodes[1].url, "image.jpg")
         
     def test_multiple_elements(self):
@@ -488,16 +488,16 @@ class TestTextToTextNodes(unittest.TestCase):
         
         # Verify the sequence of nodes
         expected = [
-            ("This is ", TextType.NORMAL_TEXT, None),
-            ("text", TextType.BOLD_TEXT, None),
-            (" with an ", TextType.NORMAL_TEXT, None),
-            ("italic", TextType.ITALIC_TEXT, None),
-            (" word and a ", TextType.NORMAL_TEXT, None),
-            ("code block", TextType.CODE_TEXT, None),
-            (" and an ", TextType.NORMAL_TEXT, None),
-            ("image", TextType.IMAGES, "img.jpg"),
-            (" and a ", TextType.NORMAL_TEXT, None),
-            ("link", TextType.LINKS, "url"),
+            ("This is ", TextType.TEXT, None),
+            ("text", TextType.BOLD, None),
+            (" with an ", TextType.TEXT, None),
+            ("italic", TextType.ITALIC, None),
+            (" word and a ", TextType.TEXT, None),
+            ("code block", TextType.CODE, None),
+            (" and an ", TextType.TEXT, None),
+            ("image", TextType.IMAGE, "img.jpg"),
+            (" and a ", TextType.TEXT, None),
+            ("link", TextType.LINK, "url"),
         ]
         
         self.assertEqual(len(nodes), len(expected))
@@ -513,9 +513,9 @@ class TestTextToTextNodes(unittest.TestCase):
         nodes = text_to_textnodes(text)
         self.assertEqual(len(nodes), 2)
         self.assertEqual(nodes[0].text, "This ")
-        self.assertEqual(nodes[0].text_type, TextType.NORMAL_TEXT)
+        self.assertEqual(nodes[0].text_type, TextType.TEXT)
         self.assertEqual(nodes[1].text, "has *nested* formatting")
-        self.assertEqual(nodes[1].text_type, TextType.BOLD_TEXT)
+        self.assertEqual(nodes[1].text_type, TextType.BOLD)
 
 class TestMarkdownToBlocks(unittest.TestCase):
     def test_markdown_to_blocks(self):

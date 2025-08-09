@@ -1,5 +1,5 @@
 # Generated site directory
-public/
+# (Now using docs/ for GitHub Pages)
 
 # Python-specific ignores
 __pycache__/

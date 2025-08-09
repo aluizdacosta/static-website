@@ -6,17 +6,17 @@ def text_node_to_html_node(text_node):
     if not isinstance(text_node, TextNode):
         raise ValueError("Input must be a TextNode")
 
-    if text_node.text_type == TextType.NORMAL_TEXT:
+    if text_node.text_type == TextType.TEXT:
         return LeafNode(None, text_node.text)
-    elif text_node.text_type == TextType.BOLD_TEXT:
+    elif text_node.text_type == TextType.BOLD:
         return LeafNode("b", text_node.text)
-    elif text_node.text_type == TextType.ITALIC_TEXT:
+    elif text_node.text_type == TextType.ITALIC:
         return LeafNode("i", text_node.text)
-    elif text_node.text_type == TextType.CODE_TEXT:
+    elif text_node.text_type == TextType.CODE:
         return LeafNode("code", text_node.text)
-    elif text_node.text_type == TextType.LINKS:
+    elif text_node.text_type == TextType.LINK:
         return LeafNode("a", text_node.text, {"href": text_node.url})
-    elif text_node.text_type == TextType.IMAGES:
+    elif text_node.text_type == TextType.IMAGE:
         return LeafNode("img", "", {"src": text_node.url, "alt": text_node.text})
     else:
         raise ValueError(f"Unsupported TextType: {text_node.text_type}")
@@ -24,7 +24,7 @@ def text_node_to_html_node(text_node):
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
     new_nodes = []
     for old_node in old_nodes:
-        if old_node.text_type != TextType.NORMAL_TEXT:
+        if old_node.text_type != TextType.TEXT:
             new_nodes.append(old_node)
             continue
         split_nodes = []
@@ -35,7 +35,7 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
             if sections[i] == "":
                 continue
             if i % 2 == 0:
-                split_nodes.append(TextNode(sections[i], TextType.NORMAL_TEXT))
+                split_nodes.append(TextNode(sections[i], TextType.TEXT))
             else:
                 split_nodes.append(TextNode(sections[i], text_type))
         new_nodes.extend(split_nodes)
@@ -102,11 +102,11 @@ def split_nodes_image(old_nodes):
     Splits TextNodes containing markdown images into multiple TextNodes.
     
     Example:
-        Input: TextNode("Hello ![alt](url) world", TextType.NORMAL_TEXT)
+        Input: TextNode("Hello ![alt](url) world", TextType.TEXT)
         Output: [
-            TextNode("Hello ", TextType.NORMAL_TEXT),
+            TextNode("Hello ", TextType.TEXT),
             TextNode("alt", TextType.IMAGE, "url"),
-            TextNode(" world", TextType.NORMAL_TEXT)
+            TextNode(" world", TextType.TEXT)
         ]
     
     Args:
@@ -118,7 +118,7 @@ def split_nodes_image(old_nodes):
     new_nodes = []
     for old_node in old_nodes:
         # Skip nodes that aren't normal text
-        if old_node.text_type != TextType.NORMAL_TEXT:
+        if old_node.text_type != TextType.TEXT:
             new_nodes.append(old_node)
             continue
             
@@ -138,12 +138,12 @@ def split_nodes_image(old_nodes):
                 new_nodes.append(
                     TextNode(
                         current_text[current_index:image_index],
-                        TextType.NORMAL_TEXT
+                        TextType.TEXT
                     )
                 )
             
             # Add the image node
-            new_nodes.append(TextNode(alt_text, TextType.IMAGES, url))
+            new_nodes.append(TextNode(alt_text, TextType.IMAGE, url))
             
             # Update the current index for the next iteration
             current_index = image_index + len(image_markdown)
@@ -153,7 +153,7 @@ def split_nodes_image(old_nodes):
             new_nodes.append(
                 TextNode(
                     current_text[current_index:],
-                    TextType.NORMAL_TEXT
+                    TextType.TEXT
                 )
             )
             
@@ -172,7 +172,7 @@ def split_nodes_link(old_nodes):
     """
     new_nodes = []
     for old_node in old_nodes:
-        if old_node.text_type != TextType.NORMAL_TEXT:
+        if old_node.text_type != TextType.TEXT:
             new_nodes.append(old_node)
             continue
             
@@ -189,12 +189,12 @@ def split_nodes_link(old_nodes):
                 new_nodes.append(
                     TextNode(
                         current_text[current_index:link_index],
-                        TextType.NORMAL_TEXT
+                        TextType.TEXT
                     )
                 )
             
             # Create the link node with the proper anchor text
-            new_nodes.append(TextNode(anchor_text, TextType.LINKS, url))
+            new_nodes.append(TextNode(anchor_text, TextType.LINK, url))
             
             current_index = link_index + len(link_markdown)
         
@@ -202,7 +202,7 @@ def split_nodes_link(old_nodes):
             new_nodes.append(
                 TextNode(
                     current_text[current_index:],
-                    TextType.NORMAL_TEXT
+                    TextType.TEXT
                 )
             )
             
@@ -237,7 +237,7 @@ def text_to_textnodes(text):
         # ]
     """
     # Start with a single text node containing the entire text
-    nodes = [TextNode(text, TextType.NORMAL_TEXT)]
+    nodes = [TextNode(text, TextType.TEXT)]
     
     # Process images first since they contain brackets that could interfere
     # with link processing if done later
@@ -247,13 +247,13 @@ def text_to_textnodes(text):
     nodes = split_nodes_link(nodes)
     
     # Process bold text with double asterisks
-    nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD_TEXT)
+    nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)
     
     # Process italic text with single asterisks
-    nodes = split_nodes_delimiter(nodes, "*", TextType.ITALIC_TEXT)
+    nodes = split_nodes_delimiter(nodes, "*", TextType.ITALIC)
     
     # Finally process code blocks
-    nodes = split_nodes_delimiter(nodes, "`", TextType.CODE_TEXT)
+    nodes = split_nodes_delimiter(nodes, "`", TextType.CODE)
     
     return nodes
 
